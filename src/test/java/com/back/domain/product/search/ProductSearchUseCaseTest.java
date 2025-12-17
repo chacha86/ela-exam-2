@@ -1,14 +1,13 @@
 package com.back.domain.product.search;
 
 import com.back.domain.product.product.Product;
+import com.back.domain.product.search.jpa.ProductSearchRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class ProductSearchUseCaseTest {

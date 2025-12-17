@@ -1,4 +1,4 @@
-package com.back.domain.product.search;
+package com.back.domain.product.search.jpa;
 
 import com.back.domain.product.product.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
