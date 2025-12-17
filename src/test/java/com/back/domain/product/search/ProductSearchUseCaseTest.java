@@ -33,6 +33,20 @@ public class ProductSearchUseCaseTest {
         // ES: 형태소 분석으로 "삼성전자노트북", "LG그램노트북" 등도 모두 찾음
     }
 
+    @Test
+    @DisplayName("2. 한영 혼용 - '맥북' 검색")
+    void 한영혼용_테스트() {
+        String keyword = "맥북";
+
+        List<Product> mysqlResult = productSearchRepository.searchByKeyword(keyword);
+        List<ProductDocument> esResult = productSearchRepositoryEs.search(keyword);
+
+        printResult(keyword, mysqlResult, esResult);
+
+        // MySQL: "Apple MacBook Pro" 못 찾음
+        // ES: 동의어 설정 시 찾을 수 있음
+    }
+
     private void printResult(String keyword, List<Product> mysql, List<ProductDocument> es) {
         System.out.println("\n========================================");
         System.out.println("검색어: " + keyword);

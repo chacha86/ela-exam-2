@@ -24,7 +24,7 @@ public class ProductDocument {
     @Id
     private Long id;
 
-    @Field(type= FieldType.Text, analyzer = "korean_index_analyzer")
+    @Field(type= FieldType.Text, analyzer = "korean_index_analyzer", searchAnalyzer = "korean_search_analyzer")
     private String name;
 
     public static ProductDocument from(Product product) {
