@@ -75,6 +75,34 @@ public class ProductSearchUseCaseTest {
         // ES: 연관도 기반 정렬
     }
 
+    @Test
+    @DisplayName("5. 오타 교정 - '놑트북' 검색")
+    void 오타교정_테스트() {
+        String keyword = "놑트북";
+
+        List<Product> mysqlResult = productSearchRepository.searchByKeyword(keyword);
+        List<ProductDocument> esResult = productSearchRepositoryEs.search(keyword);
+
+        printResult(keyword, mysqlResult, esResult);
+
+        // MySQL: 0건
+        // ES: Fuzzy 검색으로 "노트북" 관련 상품 찾음
+    }
+
+    @Test
+    @DisplayName("6. 오타 교정 - '키볻드' 검색")
+    void 오타교정_테스트2() {
+        String keyword = "키볻드";
+
+        List<Product> mysqlResult = productSearchRepository.searchByKeyword(keyword);
+        List<ProductDocument> esResult = productSearchRepositoryEs.search(keyword);
+
+        printResult(keyword, mysqlResult, esResult);
+
+        // MySQL: 0건
+        // ES: Fuzzy 검색으로 "키보드" 관련 상품 찾음
+    }
+
     private void printResult(String keyword, List<Product> mysql, List<ProductDocument> es) {
         System.out.println("\n========================================");
         System.out.println("검색어: " + keyword);

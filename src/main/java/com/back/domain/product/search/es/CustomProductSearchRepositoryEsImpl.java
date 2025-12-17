@@ -31,6 +31,7 @@ public class CustomProductSearchRepositoryEsImpl implements CustomProductSearchR
                                             .field("name")
                                             .query(keyword)
                                             .boost(2.0f)
+                                            .fuzziness("AUTO")
                                     )
                             );
 
@@ -40,6 +41,7 @@ public class CustomProductSearchRepositoryEsImpl implements CustomProductSearchR
                                                 .field("name")
                                                 .query(synonym)
                                                 .boost(1.0f)
+                                                .fuzziness("AUTO")
                                         )
                                 );
                             }
