@@ -14,14 +14,40 @@ public class CustomProductSearchRepositoryEsImpl implements CustomProductSearchR
 
     private final ElasticsearchOperations elasticsearchOperations;
 
+    Map<String, List<String>> sholudMap = Map.of(
+            "이어폰", List.of("헤드폰", "헤드셋")
+    );
+
     @Override
     public List<ProductDocument> search(String keyword) {
+
+        List<String> synonyms = sholudMap.getOrDefault(keyword, List.of());
+
         NativeQuery query = NativeQuery.builder()
                 .withQuery(q -> q
-                        .match(m -> m
-                                .field("name")
-                                .query(keyword)
-                        )
+                        .bool(b -> {
+                            b.should(s -> s
+                                    .match(m -> m
+                                            .field("name")
+                                            .query(keyword)
+                                            .boost(2.0f)
+                                    )
+                            );
+
+                            for (String synonym : synonyms) {
+                                b.should(s -> s
+                                        .match(m -> m
+                                                .field("name")
+                                                .query(synonym)
+                                                .boost(1.0f)
+                                        )
+                                );
+                            }
+
+                            b.minimumShouldMatch("1");
+
+                            return b;
+                        })
                 )
                 .build();
 
