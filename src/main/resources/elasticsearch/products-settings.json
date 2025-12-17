@@ -11,7 +11,7 @@
       },
       "korean_search_analyzer": {
         "type": "custom",
-        "tokenizer": "nori_tokenizer_mixed",
+        "tokenizer": "nori_tokenizer_discard",
         "filter": [
           "lowercase",
           "nori_part_of_speech",
@@ -23,13 +23,18 @@
       "nori_tokenizer_mixed": {
         "type": "nori_tokenizer",
         "decompound_mode": "mixed"
+      },
+      "nori_tokenizer_discard": {
+        "type": "nori_tokenizer",
+        "decompound_mode": "discard"
       }
     },
     "filter": {
       "synonym_graph_filter": {
         "type": "synonym_graph",
         "synonyms": [
-          "맥북, macbook, 맥북프로, macbook pro"
+          "맥북, macbook, 맥북프로, macbook pro",
+          "핸드폰, 스마트폰, 휴대폰"
         ]
       }
     }

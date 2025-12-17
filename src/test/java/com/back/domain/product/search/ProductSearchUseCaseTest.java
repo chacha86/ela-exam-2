@@ -47,6 +47,34 @@ public class ProductSearchUseCaseTest {
         // ES: 동의어 설정 시 찾을 수 있음
     }
 
+    @Test
+    @DisplayName("3. 동의어 - '핸드폰' 검색")
+    void 동의어_테스트() {
+        String keyword = "핸드폰";
+
+        List<Product> mysqlResult = productSearchRepository.searchByKeyword(keyword);
+        List<ProductDocument> esResult = productSearchRepositoryEs.search(keyword);
+
+        printResult(keyword, mysqlResult, esResult);
+
+        // MySQL: "핸드폰 거치대"만
+        // ES: 동의어 설정 시 "휴대폰", "스마트폰" 포함 상품도 검색
+    }
+
+    @Test
+    @DisplayName("4. 유사어 - '이어폰' 검색")
+    void 유사어_테스트() {
+        String keyword = "이어폰";
+
+        List<Product> mysqlResult = productSearchRepository.searchByKeyword(keyword);
+        List<ProductDocument> esResult = productSearchRepositoryEs.search(keyword);
+
+        printResult(keyword, mysqlResult, esResult);
+
+        // MySQL: 정확히 "이어폰" 포함된 것만
+        // ES: 연관도 기반 정렬
+    }
+
     private void printResult(String keyword, List<Product> mysql, List<ProductDocument> es) {
         System.out.println("\n========================================");
         System.out.println("검색어: " + keyword);
@@ -60,4 +88,5 @@ public class ProductSearchUseCaseTest {
 
         System.out.println();
     }
+
 }

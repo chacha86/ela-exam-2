@@ -7,6 +7,7 @@ import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class CustomProductSearchRepositoryEsImpl implements CustomProductSearchRepositoryEs {
