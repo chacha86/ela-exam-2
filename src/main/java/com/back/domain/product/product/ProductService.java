@@ -23,6 +23,7 @@ public class ProductService {
                 .category(category)
                 .description(description)
                 .price(price)
+                .suggestions(suggestions)
                 .build();
 
         Product saved = productRepository.save(product);

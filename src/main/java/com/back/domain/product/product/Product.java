@@ -34,6 +34,9 @@ public class Product {
     @Column(nullable = false, precision = 10, scale = 2)
     private int price;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> suggestions = new ArrayList<>();
+
     @CreatedDate
     private LocalDateTime createdAt;
 

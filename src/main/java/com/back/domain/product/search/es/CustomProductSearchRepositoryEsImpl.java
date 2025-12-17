@@ -1,11 +1,17 @@
 package com.back.domain.product.search.es;
 
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
+import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
+import co.elastic.clients.elasticsearch.core.search.Suggester;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.suggest.response.CompletionSuggestion;
+import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +62,76 @@ public class CustomProductSearchRepositoryEsImpl implements CustomProductSearchR
         SearchHits<ProductDocument> searchHits = elasticsearchOperations.search(query, ProductDocument.class);
 
         return searchHits.map(hit -> hit.getContent()).toList();
+    }
+
+    private SearchHits<ProductDocument> suggestQuery(String prefix) {
+        CompletionSuggester completionSuggester = new CompletionSuggester.Builder()
+                .field("suggestion")
+                .size(10)
+                .skipDuplicates(true)
+                .build();
+
+        FieldSuggester fieldSuggester = new FieldSuggester.Builder()
+                .prefix(prefix)
+                .completion(completionSuggester)
+                .build();
+
+        Suggester suggester = new Suggester.Builder()
+                .suggesters("prod-suggest", fieldSuggester)
+                .build();
+
+        NativeQuery nativeQuery = NativeQuery.builder()
+                .withSuggester(suggester)
+                .withMaxResults(0) // hits는 필요 없고 suggest만
+                .build();
+
+        return elasticsearchOperations.search(nativeQuery, ProductDocument.class);
+    }
+
+    @Override
+    public List<ProductDocument> autoComplete(String prefix) {
+
+        SearchHits<ProductDocument> searchHits = suggestQuery(prefix);
+        Suggest suggest = searchHits.getSuggest();
+
+        if (suggest == null) {
+            return Collections.emptyList();
+        }
+
+        return suggest.getSuggestions().stream()
+                .filter(CompletionSuggestion.class::isInstance)
+                .map(CompletionSuggestion.class::cast)
+                .flatMap(completionSuggestion ->
+                        completionSuggestion.getEntries().stream()
+                                .flatMap(entry -> ((CompletionSuggestion.Entry<ProductDocument>) entry).getOptions().stream())
+                                .map(obj -> {
+                                    CompletionSuggestion.Entry.Option option = (CompletionSuggestion.Entry.Option) obj;
+
+                                    return option.getSearchHit() == null ? null : option.getSearchHit().getContent();
+                                })
+                ).toList();
+
+    }
+
+    @Override
+    public List<String> getSuggestions(String prefix) {
+
+        SearchHits<ProductDocument> searchHits = suggestQuery(prefix);
+        Suggest suggest = searchHits.getSuggest();
+
+        if (suggest == null) {
+            return Collections.emptyList();
+        }
+
+        return suggest.getSuggestions().stream()
+                .filter(s -> s instanceof CompletionSuggestion)
+                .map(s -> (CompletionSuggestion<?>) s)
+                .flatMap(cs -> cs.getEntries().stream())
+                .flatMap(e -> e.getOptions().stream())
+                .map(option -> option.getText())
+                .distinct()
+                .toList();
+
     }
 
     @Override

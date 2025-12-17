@@ -103,6 +103,24 @@ public class ProductSearchUseCaseTest {
         // ES: Fuzzy 검색으로 "키보드" 관련 상품 찾음
     }
 
+    @Test
+    @DisplayName("8. 제시어 목록 자동 완성 - '노트' 입력했을 때 노트 관련 제시어 목록 제공")
+    void 제시어_목록_자동완성_테스트() {
+        String keyword = "노트";
+        List<String> esResult = productSearchRepositoryEs.getSuggestions(keyword);
+
+        esResult.forEach(s -> System.out.println("  - " + s));
+    }
+
+    @Test
+    @DisplayName("9. 문서 자동 완성 - '노트' 입력했을 때 노트 관련 키워드와 해당 문서 제공")
+    void 문서_자동완성_테스트() {
+        String keyword = "노트";
+        List<ProductDocument> esResult = productSearchRepositoryEs.autoComplete(keyword);
+
+        printResult(keyword, List.of(), esResult);
+    }
+
     private void printResult(String keyword, List<Product> mysql, List<ProductDocument> es) {
         System.out.println("\n========================================");
         System.out.println("검색어: " + keyword);

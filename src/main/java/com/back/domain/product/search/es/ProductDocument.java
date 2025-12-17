@@ -6,10 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 @Document(indexName = "products")
 @Setting(
@@ -27,10 +25,14 @@ public class ProductDocument {
     @Field(type= FieldType.Text, analyzer = "korean_index_analyzer", searchAnalyzer = "korean_search_analyzer")
     private String name;
 
+    @CompletionField
+    private Completion suggestion;
+
     public static ProductDocument from(Product product) {
         return ProductDocument.builder()
                 .id(product.getId())
                 .name(product.getName())
+                .suggestion(new Completion(product.getSuggestions()))
                 .build();
     }
 }
