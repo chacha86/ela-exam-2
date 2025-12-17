@@ -1,6 +1,7 @@
 package com.back.global.baseInitData;
 
 import com.back.domain.product.product.ProductService;
+import com.back.domain.product.search.ProductSearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -19,11 +20,13 @@ public class BaseInitData {
     @Lazy
     private BaseInitData self;
     private final ProductService productService;
+    private final ProductSearchService productSearchService;
 
     @Bean
     ApplicationRunner initDataRunner() {
         return args -> {
             self.work1();
+            self.work2();
         };
     }
 
@@ -118,4 +121,8 @@ public class BaseInitData {
         System.out.println("테스트 데이터 저장 완료");
     }
 
+    @Transactional
+    public void work2() {
+        productSearchService.resetIndex();
+    }
 }
